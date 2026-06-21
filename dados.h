@@ -33,6 +33,9 @@ void carregarDados(void);
 //create.asm
 int gerarProximoId(int proximo_id_atual);
 
+/* create.asm: comparação pura "valor_atual >= limite_maximo" (1 ou 0) */
+int limiteAtingido(int valor_atual, int limite_maximo);
+
 //read.asm
 int contarJogadoresTotal(void *tabela, int total_times_atual);
 

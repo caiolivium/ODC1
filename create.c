@@ -2,7 +2,8 @@
 #include <string.h>
 #include "dados.h"
 
-//menu
+//Menu de seleção
+
 void escolherRegiao(char *destino) {
     int opcao_regiao;
     do {
@@ -59,17 +60,20 @@ void escolherFuncao(char *destino) {
     limparBuffer();
 }
 
+/* ------------------------------------------------------------------ */
+/* Adicionar Time                                                       */
+/* ------------------------------------------------------------------ */
 
-//add time
 void adicionarTime(void) {
-    if (total_times >= MAX_TIMES) {
+    /* limiteAtingido (ASM) substitui a comparação "total_times >= MAX_TIMES" */
+    if (limiteAtingido(total_times, MAX_TIMES)) {
         printf("\n[Erro] Limite maximo de %d times atingido!\n", MAX_TIMES);
         return;
     }
 
     Time novoTime;
 
-    //id
+    /* gerarProximoId (ASM) valida o contador global e devolve o ID a usar */
     novoTime.id = gerarProximoId(proximo_id);
     proximo_id = novoTime.id + 1;
 
@@ -89,12 +93,13 @@ void adicionarTime(void) {
     novoTime.coach[strcspn(novoTime.coach, "\n")] = 0;
 
     tabela_times[total_times] = novoTime;
-    int indice_salvo = total_times; 
+    int indice_salvo = total_times; /* Guarda a posição onde foi inserido */
     total_times++;
 
     printf("\n[Sucesso] Time adicionado! (ID: %d)\n", novoTime.id);
     salvarDados();
 
+    /* Pergunta se deseja começar a adicionar jogadores imediatamente */
     char resposta;
     printf("Deseja comecar a adicionar jogadores para este time agora? (s/n): ");
     scanf(" %c", &resposta); /* O espaço antes de %c consome quebras de linha pendentes */
@@ -104,12 +109,18 @@ void adicionarTime(void) {
     }
 }
 
+/* ------------------------------------------------------------------ */
+/* Adicionar Jogador(es)                                                */
+/* ------------------------------------------------------------------ */
+
 void executarFluxoAdicionarJogador(int indice) {
     char continuar = 'n';
 
     do {
         int pos = tabela_times[indice].qtd_jogadores;
-        if (pos >= MAX_JOGADORES) {
+
+        /* limiteAtingido (ASM) substitui a comparação "pos >= MAX_JOGADORES" */
+        if (limiteAtingido(pos, MAX_JOGADORES)) {
             printf("\n[Aviso] A lineup da %s ja atingiu o limite maximo de 5 jogadores!\n",
                    tabela_times[indice].nome);
             break;
@@ -134,17 +145,20 @@ void executarFluxoAdicionarJogador(int indice) {
 
         salvarDados();
 
-        if (tabela_times[indice].qtd_jogadores >= MAX_JOGADORES) {
+        /* Se o time encheu após essa inserção, encerra o loop automaticamente */
+        if (limiteAtingido(tabela_times[indice].qtd_jogadores, MAX_JOGADORES)) {
             printf("[Info] Lineup completa com 5 jogadores!\n");
             break;
         }
 
+        /* Pergunta se deseja adicionar mais um jogador */
         printf("Deseja adicionar mais um jogador a este time? (s/n): ");
         scanf(" %c", &continuar);
 
     } while (continuar == 's' || continuar == 'S');
 }
 
+/* Chamada diretamente pelo menu principal (Opção 5) */
 void adicionarJogador(void) {
     int id, indice;
 
@@ -157,13 +171,15 @@ void adicionarJogador(void) {
     printf("Digite o ID do time: ");
     scanf("%d", &id);
 
+    /* encontrarIndicePorId (ASM) faz a busca linear pelo ID */
     indice = encontrarIndicePorId(tabela_times, total_times, id);
     if (indice == -1) {
         printf("\n[Erro] Time ID %d nao encontrado.\n", id);
         return;
     }
 
-    if (tabela_times[indice].qtd_jogadores >= MAX_JOGADORES) {
+    /* limiteAtingido (ASM) substitui a comparação "qtd_jogadores >= MAX_JOGADORES" */
+    if (limiteAtingido(tabela_times[indice].qtd_jogadores, MAX_JOGADORES)) {
         printf("\n[Erro] A lineup da %s ja esta completa (5 jogadores)!\n",
                tabela_times[indice].nome);
         return;
