@@ -16,7 +16,7 @@ LDFLAGS = -m32
 TARGET = vct
 
 C_SOURCES = main.c dados.c create.c read.c update.c delete.c
-ASM_SOURCES = create.asm read.asm update.asm delete.asm
+ASM_SOURCES = main.asm create.asm read.asm update.asm delete.asm
 
 C_OBJS = $(C_SOURCES:.c=.o)
 # Objetos do NASM recebem sufixo _asm para não colidir com os .o dos .c
